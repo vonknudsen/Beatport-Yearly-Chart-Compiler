@@ -1,6 +1,6 @@
 """ NOTES : The time.sleep() are for the system to have time to slow down before the next phase
 Some genre changes happenned on 31 March 2018, complicating matters. Techno split into techno and melodic house & techno,
-New Afro House genre, no doubt eating into house moniker."""
+New Afro House genre, no doubt eating into house moniker. Unfortunately, new genres not added to bptoptracker."""
 
 import os
 import csv

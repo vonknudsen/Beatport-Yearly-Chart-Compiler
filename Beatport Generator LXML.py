@@ -61,7 +61,7 @@ def initialize() : #Sets all necessary initial values.
     + "\nBe cautioned however, that some of the genres may not have existed for the entirety of the year."
     + "\nIf anything goes awry along the way, this is the likely culprit, and if possible, please run me again with this "
     + "reduced by one.\n\n"))
-    raw_input(("\nThanks for all that info. I will now try my best! The time I take is largely dependen on network speed, \nso thanks "
+    raw_input(("\nThanks for all that info. I will now try my best! The time I take is largely dependent on network speed, \nso thanks "
     + "in advance for your patience.\nPress enter to continue.\n"))
     if ( not " " in genre and str.isdigit(year) and str.isdigit(index) and str.isdigit(days)) is True :    
             return (url, int(index), genre, int(year), int(days))
@@ -165,7 +165,10 @@ def filt_and_export(site, j) :
             artist_list = []
             remixer_list = []
             while remixer < len(tbody[pos_index][5]) :#Handling varying number of remixers and artists.
-                remixer_list.append(tbody[pos_index][5][remixer].text.replace("\n" , "").encode("utf-8"))
+                try :
+                    remixer_list.append(tbody[pos_index][5][remixer].text.replace("\n" , "").encode("utf-8"))
+                except :
+                    pass
                 remixer = remixer + 1
             while artist < len(tbody[pos_index][4]) :
                 if (tbody[pos_index][4][artist].text is None ) is False :
@@ -414,7 +417,7 @@ with open( "Timer.txt" , "a" ) as text_file :
     text_file.write( str(toc - tic) )
 
 raw_input(("\n\nThe process is finally done! The sorted and ranked chart has been outputted as a .txt file in "
-+ "C:ProgramData\BeatportData\Year\Genre.\nIt is called Genre in 2017.txt.\nAlso stored are two files, one called timer.txt "
++ "C:ProgramData\BeatportData\Year\Genre.\nIt is called Genre in 20XX.txt.\nAlso stored are two files, one called timer.txt "
 + "that recorded how long this process took.\nThe other one is called Position_Title_Arist_Remixer_Label.txt "
 + "that is a list of all the songs that charted, and in what weighted ranking\nthey charted in.\n\n\nOn the structure "
 +"of the main file, each line is read as such:\nRank=Total Points=Title=Artist=Label   seperated by equal signs.\n\n"

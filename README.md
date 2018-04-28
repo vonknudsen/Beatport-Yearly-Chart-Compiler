@@ -1,6 +1,6 @@
 # Beatport-Yearly-Chart-Compiler
 Compiles a "Best of Year XXXX" from the bptoptracker archives.
-The bptoptracker genre list has not been updated since some time in 2017, so some genres suchy as Afro-House are not obtainable.
+The bptoptracker genre list has not been updated since some time in 2017, so some genres such as Afro-House are not obtainable.
 
 Incredibly simple to use, simply follow the prompts! 
 

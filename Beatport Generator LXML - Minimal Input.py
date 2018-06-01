@@ -530,7 +530,7 @@ else :
         text_file.write("Nothing to See Here")
 toc2 = time.clock()
 
-os.chdir("C:\ProgramData\BeatportData" + "\\" + str(year))
+os.chdir("C:\ProgramData\BeatportData" + "\\" + str(year) + "\\" + genre[1:])
 with open( "Timer.txt" , "a" ) as text_file :
     text_file.write( str(toc2 - tic2) )
 

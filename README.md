@@ -18,4 +18,4 @@ Features modified in first revision:
 Features added in second revision:
 - There was a lot of user input for even the smallest of things, like how many days in a year there were. Removed that. 
 - Changed how a few of the functions were called, allowing room for the other version of this code, that downloads all the genres in one go, to come to be.
--Provided the option to download the Top-100 chart.
+- Provided the option to download the Top-100 chart.

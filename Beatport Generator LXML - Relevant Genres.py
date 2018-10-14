@@ -10,6 +10,7 @@ import linecache
 from operator import itemgetter
 from lxml import etree
 from io import StringIO, BytesIO
+import math
 
 #For printing Errors:
 """try :
@@ -24,46 +25,72 @@ genre = "\House" #The Genre Directory you want it to go in.
 year = 2017
 days = 364 #How many days there are in the year, accounting for leap years and database errors."""
 
-year = raw_input("NOTE: This code takes around 3 hours on a decent internet connection, and could possibly take longer.\n\n"
-+ "What year do you want the charts for?")
-os.system("mode con: cols=150 lines=30")
+genre_dict = { "\\Top-100" : [49, "/top100/0/"]
+    ,"\\House" : [48 , "/house/5/" ]
+    ,"\\Techno" : [49 , "/techno/6/"]
+    ,"\\Trance" : [49 , "/trance/7/"]
+    ,"\\Breaks" : [49 , "/breaks/9/"]
+    ,"\\Dance" :  [49 , "/dance/39/"]
+    ,"\\Dubstep" :  [51 , "/dubstep/18/"]
+    ,"\\Indie-Dance-Nu-Disco" :  [64 , "/indie-dance-nu-disco/37/"]
+    ,"\\DJ-Tools" :  [52 , "/dj-tools/16/"]
+    ,"\\Hard-Dance" :  [53 , "/hard-dance/8/" ]
+    ,"\\Tech-House" :  [54, "/tech-house/11/"]
+    ,"\\Deep-House" :  [54, "/deep-house/12/" ]
+    ,"\\Glitch-Hop" :  [54, "/glitch-hop/49/" ]
+    ,"\\Psy-Trance" :  [54, "/psy-trance/13/"]
+    ,"\\Drum-Bass" :  [56, "/drum-and-bass/1/"]
+    ,"\\Future-House" :  [56, "/future-house/65/"]
+    ,"\\Electro-House" :  [57, "/electro-house/17/"]
+    ,"\\Funk-Soul-Disco" :  [59, "/funk-soul-disco/40/"]
+    ,"\\Hip-Hop-R-B" : [59, "/hip-hop-r-and-b/38/"]
+    ,"\\Minimal-Deep-Tech" :  [61 , "/minimal-deep-tech/14/"] 
+    ,"\\Progressive-House" :  [61 , "/progressive-house/15/"]
+    ,"\\Hardcore-Hard-Techno" :  [63, "/hardcore-hard-techno/2/"]
+    ,"\\Big-Room" :  [52, "/big-room/79/"]
+    ,"\\Reggae-Dancehall-Dub" :  [64, "/reggae-dancehall-dub/41/"]
+    ,"\\Electronica-Downtempo" :  [64, "/electronica-downtempo/3/"] 
+    ,"\\Funky-Groove-Jackin-House" :  [69, "/funky-groove-jackin-house/81/"]
+    ,"\\Leftfield-House-Techno" :  [70, "/leftfield-house-and-techno/80/"] }
+
+genre_list = ["\\Top-100"
+    ,"\\House"
+    ,"\\Techno"
+    ,"\\Trance"
+    ,"\\Breaks" 
+    ,"\\Dance" 
+    ,"\\Dubstep"
+    ,"\\Indie-Dance-Nu-Disco"
+    ,"\\DJ-Tools" 
+    ,"\\Hard-Dance"
+    ,"\\Tech-House" 
+    ,"\\Deep-House" 
+    ,"\\Glitch-Hop"
+    ,"\\Psy-Trance"
+    ,"\\Drum-Bass"
+    ,"\\Future-House"
+    ,"\\Electro-House"
+    ,"\\Funk-Soul-Disco"
+    ,"\\Hip-Hop-R-B"
+    ,"\\Minimal-Deep-Tech"
+    ,"\\Progressive-House"
+    ,"\\Hardcore-Hard-Techno"
+    ,"\\Big-Room"
+    ,"\\Reggae-Dancehall-Dub"
+    ,"\\Electronica-Downtempo"
+    ,"\\Funky-Groove-Jackin-House" 
+    ,"\\Leftfield-House-Techno" ]
+ 
+os.system("mode con: cols=150 lines=40")
 
 def initialize() : #Sets all necessary initial values.
-    url = raw_input(("I, the generator, will need five things from you. First, a start url so that "
-    + "I know where to start generating from!\nA start url usually looks something like "
-    + "http://www.bptoptracker.com/top/dance/39/2016-01-01 "
-    + "\nThis is the first day of the dance charts in 2016. So, where should I start?\n\n"))
-    index = (raw_input(("\nThe second thing is the most technical. There is a value I call the date index that "
-    + "I need.\nYou can get it from the start url. It is the index (counting from zero!) of the first digit if the "
-    + "day date.\nAs an example, in http://www.bptoptracker.com/top/dance/39/2016-01-[0]1 , the index of the bracketed"
-    + " zero is 49.\nNow, simply type in the index, or type Y and I will bring up a list of recommended indexes!\n\n"))) 
-    if (index is "Y" or index is "y" ) is True :
-        index = (raw_input("\nHere is a hopefully helpful list:\n" + "House = 48\n" + 
-        "Techno, Trance, Breaks, Dance = 49\n" + 
-        "Dubstep = 51\n" +
-        "Big-Room, DJ-Tools = 52\n" + 
-        "Hard-Dance = 53\n" + 
-        "Tech-House, Deep-House, Glitch-Hop, Psy-Trance = 54\n" + 
-        "Drum&Bass Future-House = 56\n" + 
-        "Electro-House= 57\n" +
-        "Funk-Soul-Disco, Hip-Hop-R&B = 59\n" + 
-        "Minimal-Deep-Tech, Progressive-House = 61\n" + 
-        "Hardcore-Hard-Techno = 63\n" + 
-        "Indie-Dance-Nu-Disco, Reggae-Dancehall, Electronica-Downtempo = 64\n" + 
-        "Funky-Groove-Jackin-House = 69\n" + 
-        "Leftfield-House&Techno = 70\n\n" + "What index would you like to use?\n\n"))
-    genre = "\\" + raw_input(("\nNow for the third thing. The genre. In the example I gave in the start url,"
-    + "the genre was Dance. \nPlease be careful not to include any spaces in your genre, as that would be "
-    + "too much for me to handle! \nWhat genre are we dealing with?\n\n"))
-    year = raw_input(("\nFourth is a small thing. What year are these charts from?\n\n"))
-    raw_input(("\nThanks for all that info. I will now try my best! The time I take is largely dependent on network speed, \nso thanks "
-    + "in advance for your patience.\nPress enter to continue.\n"))
-    if ( not " " in genre and str.isdigit(year) and str.isdigit(index)) is True :    
-            return (url, int(index), genre, int(year))
-    if ( not " " in genre and str.isdigit(year) and str.isdigit(index)) is False :
-        raw_input(("You seemed to have accidentally put in a space in your genre, or typed what is not a number in the " 
-        + "year or days fields.\nPlease take some time to find the offending culprit, and we can start again.\n"))
+    year = input(("What year are these charts from?\n\n"))
+    resume = input(("\nThanks for all the info. I will now try my best! The time I take is largely dependent on network speed, \nso thanks "
+    + "in advance for your patience.\nPress Enter to continue or if you think you made a mistake, we can start again, simply press R.\n\n"))
+    if (resume is "R" or resume is "r" ) is True :
         return initialize()
+    else:
+        return (year)
 
 def initialize_simplified(year, genre) :#Sets all initial values with minimal input needed.
     os.system("mkdir C:\ProgramData\BeatportData" + "\\" + str(year) + genre )
@@ -71,7 +98,7 @@ def initialize_simplified(year, genre) :#Sets all initial values with minimal in
     os.chdir("C:\ProgramData\BeatportData" + "\\" + str(year) +  genre + "\Data" )
 
 def progress_bar(value, total) :#Literally a progress bar, largely useful for part I, not so much for the other parts.
-        sys.stdout.write("\r" + str(value * 100 / total) + 
+        sys.stdout.write("\r" + str(math.floor(value * 100 / total)) + 
         " Percent Complete [{0}{1}]".format("|" * int(value *100 / total), " " * (100 - int(value *100 / total))))
         sys.stdout.flush()
 
@@ -123,7 +150,7 @@ def rest_month(url_first, date_position, genre, year) : #Initiates the saving sc
         second = first[:date_position - 3] + str(l) + first[date_position - 1:]
         html_open(second, l, date_position, genre, year)
         l = l + 1
-        second = first[:date_position - 3] + str(01) + first[date_position - 1:]
+        second = first[:date_position - 3] + "01" + first[date_position - 1:]
 
 """BEGINNING OF SECOND PART"""
 
@@ -140,16 +167,19 @@ def filt_and_export(site, j, genre, year) :
     seek_to_genre_data(genre)
 
     set = str(j) + ".txt"
-    j_set = open( set , "a")
+    j_set = open( set , "a", encoding = "utf-8")
     html_empty = "This is a surplus day. Ignore."
       
     if os.path.getsize(site) > 20000 :  #Check if the day is for a fake day like Feb. 29th or not.
       
     
         html_file = open(site , "r" )
+        with open(site, encoding = "utf-8" , errors = "replace") as f:
+            lines = f.readlines()
         parser = etree.HTMLParser()
-        html_parse = etree.parse(html_file , parser)#Returns an ElementTree object
-        root = html_parse.getroot()
+        html_parse2 = etree.HTML(str(lines), parser)
+        #html_parse = etree.parse(html_file , parser)#Returns an ElementTree object
+        root = html_parse2
         #tbody = root[1][5][5][1] #Position of tbody, used in case the iter loop does not work.
         for tbody in root.iter("tbody") :
             tbody = tbody
@@ -167,66 +197,66 @@ def filt_and_export(site, j, genre, year) :
             if (genre == "\\Top-100" ) is False :
                 while remixer < len(tbody[pos_index][5]) :#Handling varying number of remixers and artists.
                     try :
-                        remixer_list.append(tbody[pos_index][5][remixer].text.replace("\n" , "").encode("utf-8"))
+                        remixer_list.append(tbody[pos_index][5][remixer].text.replace("\n" , "").replace(str("\u266F") , ""))
                     except :
                         pass
                     remixer = remixer + 1
                 while artist < len(tbody[pos_index][4]) :
                     if (tbody[pos_index][4][artist].text is None ) is False :
-                        artist_list.append(tbody[pos_index][4][artist].text.replace("\n" , "").encode("utf-8"))
+                        artist_list.append(tbody[pos_index][4][artist].text.replace("\n" , "").replace(str("\u266F") , ""))
                     if (tbody[pos_index][4][artist].text is None ) is True :
                         pass
                     artist = artist + 1
-                song_1.append(tbody[pos_index][0].text.replace("\n" , "").encode("utf-8"))#Position
-                song_1.append(tbody[pos_index][1][0].text.replace("\n" , "").encode("utf-8"))#Movement
-                song_1.append(tbody[pos_index][3][0].text.replace("\n" , "").encode("utf-8"))#Title
+                song_1.append(tbody[pos_index][0].text.replace("\n" , "").replace(str("\u266F") , ""))#Position
+                song_1.append(tbody[pos_index][1][0].text.replace("\n" , "").replace(str("\u266F") , ""))#Movement
+                song_1.append(tbody[pos_index][3][0].text.replace("\n" , "").replace(str("\u266F") , ""))#Title
                 song_1.append(artist_list)#Artist
                 song_1.append(remixer_list)#Remixer
                 if (tbody[pos_index][6].text is None ) is False :#Sometimes there is no BPM, Label, Key or Release Date.
-                    song_1.append((tbody[pos_index][6].text.encode("utf-8")))#BPM
+                    song_1.append((tbody[pos_index][6].text.replace(str("\u266F") , "")))#BPM
                 if (tbody[pos_index][6].text is None ) is True :
                     song_1.append("")#BPM
                 if (tbody[pos_index][7].text is None ) is False :
-                    song_1.append(tbody[pos_index][7].text.replace("\n" , "").encode("utf-8"))#Key
+                    song_1.append(tbody[pos_index][7].text.replace("\n" , "").replace(str("\u266F") , ""))#Key
                 if (tbody[pos_index][7].text is None ) is True :
                     song_1.append("")#Key
                 if (tbody[pos_index][8][0].text is None ) is False :
-                    song_1.append(tbody[pos_index][8][0].text.replace("\n" , "").encode("utf-8"))#Label
+                    song_1.append(tbody[pos_index][8][0].text.replace("\n" , "").replace(str("\u266F") , ""))#Label
                 if (tbody[pos_index][8][0].text is None ) is True :
                     song_1.append("")#Label
                 if (tbody[pos_index][9].text is None ) is False :
-                    song_1.append(tbody[pos_index][9].text.replace("\n" , "").encode("utf-8"))#Release Date
+                    song_1.append(tbody[pos_index][9].text.replace("\n" , "").replace(str("\u266F") , ""))#Release Date
                 if (tbody[pos_index][9].text is None ) is True :
                     song_1.append("")#Release Date
                 
             if (genre == "\\Top-100" ) is True :
                 while remixer < len(tbody[pos_index][5]) :#Handling varying number of remixers and artists.
                     try :
-                        remixer_list.append(tbody[pos_index][5][remixer].text.replace("\n" , "").encode("utf-8"))
+                        remixer_list.append(tbody[pos_index][5][remixer].text.replace("\n" , "").replace(str("\u266F") , ""))
                     except :
                         pass
                     remixer = remixer + 1
                 while artist < len(tbody[pos_index][4]) :
                     if (tbody[pos_index][4][artist].text is None ) is False :
-                        artist_list.append(tbody[pos_index][4][artist].text.replace("\n" , "").encode("utf-8"))
+                        artist_list.append(tbody[pos_index][4][artist].text.replace("\n" , "").replace(str("\u266F") , ""))
                     if (tbody[pos_index][4][artist].text is None ) is True :
                         pass
                     artist = artist + 1
-                song_1.append(tbody[pos_index][0].text.replace("\n" , "").encode("utf-8"))#Position
-                song_1.append(tbody[pos_index][1][0].text.replace("\n" , "").encode("utf-8"))#Movement
-                song_1.append(tbody[pos_index][3][0].text.replace("\n" , "").encode("utf-8"))#Title
+                song_1.append(tbody[pos_index][0].text.replace("\n" , "").replace(str("\u266F") , ""))#Position
+                song_1.append(tbody[pos_index][1][0].text.replace("\n" , "").replace(str("\u266F") , ""))#Movement
+                song_1.append(tbody[pos_index][3][0].text.replace("\n" , "").replace(str("\u266F") , ""))#Title
                 song_1.append(artist_list)#Artist
                 song_1.append(remixer_list)#Remixer
                 if (tbody[pos_index][6][0].text is None ) is False :#Sometimes there is no Genre, Label, or Release Date.
-                    song_1.append((tbody[pos_index][6][0].text.encode("utf-8")))#Genre
+                    song_1.append((tbody[pos_index][6][0].text).replace(str("\u266F") , ""))#Genre
                 if (tbody[pos_index][6][0].text is None ) is True :
                     song_1.append("")#Genre
                 if (tbody[pos_index][7][0].text is None ) is False :
-                    song_1.append(tbody[pos_index][7][0].text.replace("\n" , "").encode("utf-8"))#Label
+                    song_1.append(tbody[pos_index][7][0].text.replace("\n" , "").replace(str("\u266F") , ""))#Label
                 if (tbody[pos_index][7][0].text is None ) is True :
                     song_1.append("")#Label
                 if (tbody[pos_index][8].text is None ) is False :
-                    song_1.append(tbody[pos_index][8].text.replace("\n" , "").encode("utf-8"))#Release Date
+                    song_1.append(tbody[pos_index][8].text.replace("\n" , "").replace(str("\u266F") , ""))#Release Date
                 if (tbody[pos_index][8].text is None ) is True :
                     song_1.append("")#Release Date
                 
@@ -366,7 +396,7 @@ def full_write(genre, year) :
     """Files are labelled from 1-372. Luckily, the bonus days come out as None,
     so do not affect the overall file structure."""
     seek_to_genre(genre)
-    text_file = open( "Position_Title_Artist_Remixer_Label.txt" , "a" )
+    text_file = open( "Position_Title_Artist_Remixer_Label.txt" , "a" , encoding = "utf-8" )
     if days_check(genre, year) != 0:
         rep_day = 1 
         while rep_day <= 372 : 
@@ -386,17 +416,19 @@ entries, summing their weighted rank and then sorts the final list, outputting t
 
 def make_dict(k, genre) :#Makes the dictionary from the big file from part 3. K is the amount of lines divide by 5
     a = 0
+    seek_to_genre(genre)
+    with open("Position_Title_Artist_Remixer_Label.txt" , encoding = "utf-8") as f:
+        lines = f.readlines()
     song_dict = {}
     while a < k : #indexing starts at 0
-        seek_to_genre(genre)
-        position = int(linecache.getline("Position_Title_Artist_Remixer_Label.txt", 6 * a + 2 ))
-        title = str(linecache.getline("Position_Title_Artist_Remixer_Label.txt", 6 * a + 4))
+        position = int(lines[6 * a + 1 ])
+        title = str(lines[6 * a + 3])
         title_n = title[:len(title) - 1]
-        artist = str(linecache.getline("Position_Title_Artist_Remixer_Label.txt", 6 * a + 3))
+        artist = str(lines[6 * a + 2])
         artist_n = artist[:len(artist) - 1]
-        remixer = str(linecache.getline("Position_Title_Artist_Remixer_Label.txt", 6 * a + 5))
+        remixer = str(lines[6 * a + 4])
         remixer_n = remixer[:len(remixer) - 1]
-        label = str(linecache.getline("Position_Title_Artist_Remixer_Label.txt", 6 * a + 6))
+        label = str(lines[6 * a + 5])
         label_n = label[:len(label) - 1]
         if remixer == "\n" :
             song_dict[a] = [position, title_n, artist_n, " ", label_n ]
@@ -444,78 +476,55 @@ def write_to_text(genre, year) :#Prints without the largely useless remixer tag.
     summed_dict = sorted(make_summed_dict(days_check(genre, year), make_dict(100 * days_check(genre, year), genre)).values(), key=itemgetter(0), reverse = True)
     while d < len(summed_dict) :
         seek_to_genre(genre)
-        with open(genre[1:] + " in " + str(year) + ".txt" , "a" ) as text_file :
-            text_file.write(str(d + 1) + "=" + str(summed_dict[d][0]) + "=" + str(summed_dict[d][2]) + 
+        with open(genre[1:] + " in " + str(year) + ".txt" , "a" , encoding = "utf-8") as text_file :
+            line_entry = (str(d + 1) + "=" + str(summed_dict[d][0]) + "=" + str(summed_dict[d][2]) + 
             "=" +  str(summed_dict[d][1]) + "=" + str(summed_dict[d][4]) + "\n")
+            text_file.write(line_entry.replace("\\'" , "'"))
         d = d + 1
     summed_dict = {}
 
-#Genre dictionary and running the code
-
-genre_dict = { "\\Top-100" : [49, "/top100/0/"]
-    ,"\\House" : [48 , "/house/5/" ]
-    ,"\\Techno" : [49 , "/techno/6/"]
-    ,"\\Trance" : [49 , "/trance/7/"]
-    ,"\\Breaks" : [49 , "/breaks/9/"]
-    ,"\\Dance" :  [49 , "/dance/39/"]
-    ,"\\Dubstep" :  [51 , "/dubstep/18/"]
-    ,"\\Indie-Dance-Nu-Disco" :  [64 , "/indie-dance-nu-disco/37/"]
-    ,"\\DJ-Tools" :  [52 , "/dj-tools/16/"]
-    ,"\\Hard-Dance" :  [53 , "/hard-dance/8/" ]
-    ,"\\Tech-House" :  [54, "/tech-house/11/"]
-    ,"\\Deep-House" :  [54, "/deep-house/12/" ]
-    ,"\\Glitch-Hop" :  [54, "/glitch-hop/49/" ]
-    ,"\\Psy-Trance" :  [54, "/psy-trance/13/"]
-    ,"\\Drum-Bass" :  [56, "/drum-and-bass/1/"]
-    ,"\\Future-House" :  [56, "/future-house/65/"]
-    ,"\\Electro-House" :  [57, "/electro-house/17/"]
-    ,"\\Funk-Soul-Disco" :  [59, "/funk-soul-disco/40/"]
-    ,"\\Hip-Hop-R-B" : [59, "/hip-hop-r-and-b/38/"]
-    ,"\\Minimal-Deep-Tech" :  [61 , "/minimal-deep-tech/14/"] 
-    ,"\\Progressive-House" :  [61 , "/progressive-house/15/"]
-    ,"\\Hardcore-Hard-Techno" :  [63, "/hardcore-hard-techno/2/"]
-    ,"\\Big-Room" :  [52, "/big-room/79/"]
-    ,"\\Reggae-Dancehall-Dub" :  [64, "/reggae-dancehall-dub/41/"]
-    ,"\\Electronica-Downtempo" :  [64, "/electronica-downtempo/3/"] 
-    ,"\\Funky-Groove-Jackin-House" :  [69, "/funky-groove-jackin-house/81/"]
-    ,"\\Leftfield-House-Techno" :  [70, "/leftfield-house-and-techno/80/"] }
+#Running the code
 
 
-tic2 = time.clock()
-print "STAGE 1/4 : \n"
-for genre in genre_dict :
+tic2 = time.perf_counter()
+(year) = initialize()
+print("STAGE 1/4 : \n")
+for genre_index in range(0,27) :
+    genre = genre_list[int(genre_index)]
     url_first = "http://www.bptoptracker.com/top" + genre_dict[genre][1] + str(year) + "-01-01"
     initialize_simplified(year, genre)
     rest_month(url_first, genre_dict[genre][0], genre, year)
-    print genre[1:] + " Complete"
+    print(genre[1:] + " Complete")
 
-print "STAGE 2/4 : \n"
-for genre in genre_dict :
+print("\n\nSTAGE 2/4 : \n")
+for genre_index in range(0,27) :
+    genre = genre_list[int(genre_index)]
     full_filt_and_export(genre,year)
-    print genre[1:] + " Complete"
+    print(genre[1:] + " Complete")
 
-
-print "STAGE 3/4 : \n"
-for genre in genre_dict :
+print("\n\nSTAGE 3/4 : \n")
+for genre_index in range(0,27) :
+    genre = genre_list[int(genre_index)]
     full_write(genre, year)
-    print genre[1:] + " Complete"
+    print(genre[1:] + " Complete")
 
-print "STAGE 4/4 : "
-print "Processing..."
-for genre in genre_dict :
+print("\n\nSTAGE 4/4 : ")
+for genre_index in range(0,27) :
+    genre = genre_list[int(genre_index)]
     if days_check(genre,year) != 0 :
         write_to_text(genre, year)
     else :
         seek_to_genre(genre)
-        with open(genre[1:] + " in " + str(year) + ".txt" , "a" ) as text_file :
+        with open(genre[1:] + " in " + str(year) + ".txt" , "a" , encoding = "utf-8" ) as text_file :
             text_file.write("Nothing to See Here")
-toc2 = time.clock()
+    print(genre[1:] + " Complete")
+toc2 = time.perf_counter()
 
 os.chdir("C:\ProgramData\BeatportData" + "\\" + str(year))
 with open( "Timer.txt" , "a" ) as text_file :
     text_file.write( str(toc2 - tic2) )
 
-raw_input(("\n\nThe process is finally done! The sorted and ranked charts have been outputted as a .txt file in "
+input(("\n\nThe process is finally done! The sorted and ranked charts have been outputted as a .txt file in "
 + "C:ProgramData\BeatportData\Year\Genre.\nIt is called Genre in 20XX.txt.\nAlso stored are two files, one called timer.txt "
 + "that recorded how long this process took.\nThe other one is called Position_Title_Arist_Remixer_Label.txt "
 + "that is a list of all the songs that charted, and in what weighted ranking\nthey charted in.\n\n\nOn the structure "

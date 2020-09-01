@@ -22,3 +22,8 @@ Features added in second revision:
 
 Features added in third revision:
 - Moving from Python 2.x to Python 3.7 environment.
+
+Features added in fourth revision:
+- Code updated to reflect new bptoptracker site (site refresh in 2019).
+- Data now stored in csv and sqlite databases.
+- Several new genres included as well.
